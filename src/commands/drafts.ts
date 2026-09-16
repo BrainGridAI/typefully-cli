@@ -27,6 +27,7 @@ interface ContentFlags {
   allPlatforms?: boolean;
   media?: string;
   mediaFile?: string[];
+  mediaPerPost?: boolean;
   replyTo?: string;
   quote?: string;
   community?: string;
@@ -97,6 +98,7 @@ async function contentToPlatforms(
     community: flags.community,
     hideLinkPreview: Boolean(flags.hideLinkPreview),
     checkLength: flags.lengthCheck !== false,
+    mediaPerPost: Boolean(flags.mediaPerPost),
   });
 }
 
@@ -108,6 +110,7 @@ function addContentOptions(cmd: Command): Command {
     .option("--all-platforms", "post to every connected platform")
     .option("--media <ids>", "comma-separated media ids to attach to the first post")
     .option("--media-file <path>", "upload a local image/video and attach it (repeatable)", collect, [])
+    .option("--media-per-post", "attach media one per post in order (--media ids first, then --media-file in the order given) instead of all on the first post")
     .option("--reply-to <url>", "X only: reply to this post URL")
     .option("--quote <url>", "X only: quote this post URL")
     .option("--community <id>", "X only: post into this community id")

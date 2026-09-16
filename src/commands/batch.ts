@@ -24,6 +24,7 @@ import { buildPlatforms, ctxOf, parsePlatforms, uploadMediaFile } from "./helper
  *       "tweets": ["main", "reply"],       // or "posts"; one string per post in the thread
  *       "platforms": ["x"],               // optional, default x
  *       "media_file": "path.mp4", "media_files": ["a.png"],  // uploaded on push
+ *       "media_per_post": true,           // one media_files entry per tweet, in order
  *       "media": true,                    // legacy flag: attach by hand in Typefully
  *       "tags": ["ship"], "title": "…"    // optional overrides
  *     }
@@ -43,6 +44,8 @@ export interface BatchPost {
   platforms?: string[] | string;
   media_file?: string;
   media_files?: string[];
+  /** Attach media_files one per tweet, in order, instead of all on the first. */
+  media_per_post?: boolean;
   media?: boolean;
   tags?: string[];
   draft_id?: number | string;
@@ -281,7 +284,13 @@ export function registerBatchCommands(program: Command): void {
           for (const f of media) mediaIds.push(await uploadMediaFile(ctx, set, f, { quiet: ctx.format === "json" }));
         }
         const body: CreateDraftRequest = {
-          platforms: buildPlatforms({ platforms, posts: texts, mediaIds, checkLength: opts.lengthCheck !== false }),
+          platforms: buildPlatforms({
+            platforms,
+            posts: texts,
+            mediaIds,
+            checkLength: opts.lengthCheck !== false,
+            mediaPerPost: Boolean(p.media_per_post),
+          }),
           draft_title: title,
         };
         if (when) body.publish_at = when;

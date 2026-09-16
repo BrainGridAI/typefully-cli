@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `drafts create --media-per-post` and batch `media_per_post: true`: attach media one per
+  post in order (thread of N posts, N files) instead of all on the first post. More media
+  than posts is refused.
+
 ## [0.1.0] - 2026-09-16
 
 Initial release.
