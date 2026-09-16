@@ -1,6 +1,9 @@
 {
-  "name": "typefully-cli",
+  "name": "@braingrid/typefully-cli",
   "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Comprehensive command-line interface for the Typefully API (v2) — drafts, threads, scheduling, media, queue, tags, analytics, and batch publishing across X, LinkedIn, Threads, Bluesky and Mastodon.",
   "type": "module",
   "license": "MIT",
@@ -45,7 +48,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run build"
+    "check": "pnpm typecheck && pnpm test && pnpm build",
+    "prepublishOnly": "pnpm check"
   },
   "dependencies": {
     "commander": "^12.1.0",

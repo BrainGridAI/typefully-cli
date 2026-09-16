@@ -1,26 +1,37 @@
 # typefully-cli
 
-A comprehensive command-line interface for the [Typefully API v2](https://typefully.com/docs/api):
-create and schedule drafts and threads across X, LinkedIn, Threads, Bluesky and Mastodon, upload
+[![CI](https://github.com/BrainGridAI/typefully-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/BrainGridAI/typefully-cli/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/%40braingrid%2Ftypefully-cli)](https://www.npmjs.com/package/@braingrid/typefully-cli)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+A comprehensive command-line interface for the [Typefully API v2](https://typefully.com/docs/api).
+Create and schedule drafts and threads across X, LinkedIn, Threads, Bluesky and Mastodon, upload
 media, manage the queue and tags, pull post and follower analytics, and push whole content
 calendars from a JSON file with one command.
 
-```
+Built for humans at a terminal and for agents in a script: every command has `-o json`, exit
+codes are meaningful, nothing publishes unless you say so.
+
+```bash
 typefully drafts create -f thread.md --schedule next-free-slot --media-file card.png
-typefully batch push gtm/twitter/schedule-60.json --day 62 --record gtm/twitter/draft-ids.json
-typefully analytics posts --days 14 --group-by-draft --map gtm/twitter/draft-ids.json
+typefully batch push content/schedule.json --day 3 --record content/draft-ids.json
+typefully analytics posts --days 14 --group-by-draft --map content/draft-ids.json
 ```
 
 ## Install
 
 ```bash
-# from source (this repo)
-pnpm install
-pnpm build
-pnpm link --global      # puts `typefully` on your PATH
+npm install -g @braingrid/typefully-cli     # or: pnpm add -g @braingrid/typefully-cli
+typefully --version
+```
 
-# or run without installing
-node dist/index.js --help
+From source:
+
+```bash
+git clone https://github.com/BrainGridAI/typefully-cli
+cd typefully-cli
+pnpm install && pnpm build
+pnpm link --global          # puts `typefully` on your PATH
 ```
 
 Requires Node.js 18+.
@@ -55,12 +66,12 @@ needs one. Resolution order: `--social-set` flag, `TYPEFULLY_SOCIAL_SET`, the pr
 
 ```bash
 typefully social-sets list --platforms
-#   id      username      name          team       platforms
-#   54758   @acossta      Nico Acosta              x,linkedin,bluesky
-#   315492  @radialbuild  Radial        BrainGrid  x
+#   id      username      name         team     platforms
+#   12345   @yourhandle   You                   x,linkedin,bluesky
+#   67890   @yourbrand    Your Brand   Acme     x
 
-typefully config set social_set 54758         # global default
-typefully config set social_set 315492 --profile-scope
+typefully config set social_set 12345         # global default
+typefully config set social_set 67890 --profile-scope
 typefully social-sets get                     # connected platforms + publishing quota
 ```
 
@@ -101,6 +112,9 @@ Every X post is checked against X's weighted 280-character limit before the requ
 count 23, emoji and CJK count 2). Add `--no-length-check` to override. `--dry-run` prints the exact
 request body without calling the API.
 
+Default platforms are X + Bluesky when both are connected, otherwise the first connected platform.
+Override per call with `-p` or globally with `TYPEFULLY_DEFAULT_PLATFORMS=x,linkedin`.
+
 ## Media, tags, queue
 
 ```bash
@@ -123,13 +137,13 @@ typefully queue set-schedule --rules '[{"h":9,"m":30,"days":["mon","wed","fri"]}
 typefully analytics posts --days 14                          # per post, every page
 typefully analytics posts --from 2026-08-01 --to 2026-08-31 --include-replies -o csv
 typefully analytics posts --group-by-draft                   # one row per thread
-typefully analytics posts --group-by-draft --map gtm/twitter/draft-ids.json   # labelled by campaign
+typefully analytics posts --group-by-draft --map content/draft-ids.json   # labelled by campaign
 typefully analytics followers --days 30
 ```
 
 `--group-by-draft` takes the thread's top tweet for impressions and engagement and sums link clicks
 across every tweet in the thread (reply-arm links live on the reply). `--map` accepts either
-`{ "61-am": 9930823 }` or `{ "61-am": { "id": 9930823, "campaign": "h-agent-honesty" } }`.
+`{ "3-am": 9930823 }` or `{ "3-am": { "id": 9930823, "campaign": "launch-week" } }`.
 
 ## Batch publishing
 
@@ -137,15 +151,15 @@ across every tweet in the thread (reply-arm links live on the reply). `--map` ac
 recording the resulting draft ids so analytics can be matched back to campaigns.
 
 ```jsonc
-// gtm/twitter/schedule-60.json
+// content/schedule.json
 {
-  "social_set": 315492,
+  "social_set": 12345,
   "posts": [
     {
-      "day": 62, "slot": "am", "campaign": "h-agent-honesty",
+      "day": 3, "slot": "am", "campaign": "launch-week",
       "publish_at": "2026-09-20T15:57:00Z",
       "tweets": ["main tweet", "reply with the link"],
-      "media_files": ["gtm/videos/out/clip.mp4"],
+      "media_files": ["content/clips/demo.mp4"],
       "platforms": ["x"]
     }
   ]
@@ -153,13 +167,13 @@ recording the resulting draft ids so analytics can be matched back to campaigns.
 ```
 
 ```bash
-typefully batch list gtm/twitter/schedule-60.json --day 62 --record gtm/twitter/draft-ids.json
-typefully batch push gtm/twitter/schedule-60.json --day 62 --record gtm/twitter/draft-ids.json --skip-recorded
-typefully batch push gtm/twitter/schedule-60.json --key 62-am --dry-run
-typefully batch push gtm/twitter/schedule-60.json --all --skip-existing     # dedupe by draft title
+typefully batch list content/schedule.json --day 3 --record content/draft-ids.json
+typefully batch push content/schedule.json --day 3 --record content/draft-ids.json --skip-recorded
+typefully batch push content/schedule.json --key 3-am --dry-run
+typefully batch push content/schedule.json --all --skip-existing     # dedupe by draft title
 ```
 
-Each post becomes one draft titled `AM D62 h-agent-honesty` (slot, day, campaign), scheduled at its
+Each post becomes one draft titled `AM D3 launch-week` (slot, day, campaign), scheduled at its
 own `publish_at` unless `--at` overrides it or `--unscheduled` is given. `--skip-recorded` skips keys
 already in the record file; `--skip-existing` walks every draft in Typefully and skips titles that
 already exist, so re-running a day never creates duplicates.
@@ -190,7 +204,8 @@ Environment: `TYPEFULLY_API_KEY` (alias `TYPEFULLY_TOKEN`), `TYPEFULLY_SOCIAL_SE
 `TYPEFULLY_NO_DOTENV`, `NO_COLOR`.
 
 Config lives at `~/.config/typefully/config.json` (`typefully config path`), with profiles for
-multiple keys and per-profile default social sets.
+multiple keys and per-profile default social sets. It also reads the `default_social_set_id` key
+written by Typefully's official agent skill.
 
 ## Exit codes
 
@@ -201,14 +216,25 @@ multiple keys and per-profile default social sets.
 | 2 | usage / configuration error (missing key, no social set, bad flag) |
 | 3 | content validation failed (post over X's limit) |
 
+## Using it from agents and scripts
+
+- Pipe output: when stdout is not a TTY the default format is JSON.
+- `--dry-run` on `drafts create`, `drafts update`, and `batch push` prints the request instead of
+  sending it, so an agent can show a human what will happen.
+- `drafts create` without `--schedule` never publishes; a reviewer can schedule from the Typefully
+  editor link the CLI prints.
+- Retries with backoff on 429/5xx and network errors are built in (`--no-retry` to disable).
+  `--debug` logs every request and response to stderr.
+
 ## Development
 
 ```bash
 pnpm dev -- drafts list --scheduled    # run from source
-pnpm typecheck
-pnpm test
-pnpm build
+pnpm check                             # typecheck + tests + build
 ```
 
-Retries with backoff on 429/5xx and network errors are built into the client (`--no-retry` to
-disable). `--debug` logs every request and response to stderr.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+[MIT](LICENSE)

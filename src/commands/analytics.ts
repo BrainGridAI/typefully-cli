@@ -77,7 +77,7 @@ export function groupByDraft(rows: PostAnalytics[], map: DraftMap = {}): DraftGr
   }
 
   const out: DraftGroup[] = [];
-  for (const [k, g] of groups) {
+  for (const g of groups.values()) {
     const main = g.reduce((a, b) => (num(a.metrics.impressions) >= num(b.metrics.impressions) ? a : b));
     const e = main.metrics.engagement ?? {};
     const imp = num(main.metrics.impressions);
@@ -100,7 +100,6 @@ export function groupByDraft(rows: PostAnalytics[], map: DraftMap = {}): DraftGr
       text: truncate(main.preview_text, 50),
       url: main.url ?? "",
     });
-    void k;
   }
   out.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
   return out;

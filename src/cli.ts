@@ -105,13 +105,13 @@ Environment variables:
 Examples:
   typefully auth login                                      store an API key
   typefully social-sets list                                list accounts and their ids
-  typefully config set social_set 54758                     pick a default account
+  typefully config set social_set 12345                     pick a default account
   typefully drafts create "Hello world"                     unscheduled draft on the default platforms
   typefully drafts create -f thread.md --schedule next-free-slot
   typefully drafts create "Take" --platforms x --reply-to https://x.com/u/status/1
   typefully drafts list --status scheduled                  upcoming posts
-  typefully analytics posts --from 2026-09-01 --group-by-draft
-  typefully batch push gtm/twitter/schedule-60.json --day 62 --record gtm/twitter/draft-ids.json
+  typefully analytics posts --days 14 --group-by-draft
+  typefully batch push content/schedule.json --day 3 --record content/draft-ids.json
 `,
   );
 

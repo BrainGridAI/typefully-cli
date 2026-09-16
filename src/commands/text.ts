@@ -17,7 +17,10 @@ export function registerTextCommands(program: Command): void {
     .action((positional: string[], opts, command: Command) => {
       const ctx = ctxOf(command);
       const posts = resolvePosts(positional, opts);
-      const rows = posts.map((p, i) => ({ post: i + 1, length: xWeightedLength(p), ok: xWeightedLength(p) <= X_MAX_WEIGHTED_LENGTH, text: p }));
+      const rows = posts.map((p, i) => {
+        const length = xWeightedLength(p);
+        return { post: i + 1, length, ok: length <= X_MAX_WEIGHTED_LENGTH, text: p };
+      });
       if (ctx.format === "json") printJson(rows);
       else {
         printItems(

@@ -12,15 +12,14 @@ import { findOverLimit } from "../util/xlength.js";
 import { buildPlatforms, ctxOf, parsePlatforms, uploadMediaFile } from "./helpers.js";
 
 /**
- * Batch file format (the `schedule-60.json` / `queue.json` convention used by
- * the per-repo Twitter loops this CLI replaces):
+ * Batch file format (a JSON content calendar):
  *
  * {
- *   "social_set": 315492,                 // optional; --social-set / env win
+ *   "social_set": 12345,                  // optional; --social-set / env win
  *   "posts": [
  *     {
- *       "day": 62, "slot": "am",          // identity → key "62-am", title "AM D62 <campaign>"
- *       "campaign": "h-agent-honesty",
+ *       "day": 3, "slot": "am",           // identity → key "3-am", title "AM D3 <campaign>"
+ *       "campaign": "launch-week",
  *       "publish_at": "2026-09-20T15:57:00Z",   // or "schedule"; next-free-slot | ISO
  *       "tweets": ["main", "reply"],       // or "posts"; one string per post in the thread
  *       "platforms": ["x"],               // optional, default x
@@ -173,7 +172,7 @@ async function existingTitles(ctx: CliContext, set: number): Promise<Map<string,
 }
 
 export function registerBatchCommands(program: Command): void {
-  const batch = program.command("batch").description("Push a JSON schedule of posts (schedule-60.json / queue.json convention)");
+  const batch = program.command("batch").description("Push a JSON content calendar of posts as scheduled drafts");
 
   batch
     .command("list <file>")
