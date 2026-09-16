@@ -1,0 +1,64 @@
+{
+  "name": "typefully-cli",
+  "version": "0.1.0",
+  "description": "Comprehensive command-line interface for the Typefully API (v2) — drafts, threads, scheduling, media, queue, tags, analytics, and batch publishing across X, LinkedIn, Threads, Bluesky and Mastodon.",
+  "type": "module",
+  "license": "MIT",
+  "author": "acossta <nico@braingrid.ai>",
+  "homepage": "https://github.com/BrainGridAI/typefully-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrainGridAI/typefully-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BrainGridAI/typefully-cli/issues"
+  },
+  "keywords": [
+    "typefully",
+    "cli",
+    "api",
+    "twitter",
+    "x",
+    "linkedin",
+    "bluesky",
+    "threads",
+    "social",
+    "scheduling"
+  ],
+  "bin": {
+    "typefully": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
