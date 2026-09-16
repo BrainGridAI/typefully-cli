@@ -1,7 +1,6 @@
 # typefully-cli
 
 [![CI](https://github.com/BrainGridAI/typefully-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/BrainGridAI/typefully-cli/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/%40braingrid%2Ftypefully-cli)](https://www.npmjs.com/package/@braingrid/typefully-cli)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A comprehensive command-line interface for the [Typefully API v2](https://typefully.com/docs/api).
@@ -21,20 +20,14 @@ typefully analytics posts --days 14 --group-by-draft --map content/draft-ids.jso
 ## Install
 
 ```bash
-npm install -g @braingrid/typefully-cli     # or: pnpm add -g @braingrid/typefully-cli
-typefully --version
-```
-
-From source:
-
-```bash
 git clone https://github.com/BrainGridAI/typefully-cli
 cd typefully-cli
 pnpm install && pnpm build
 pnpm link --global          # puts `typefully` on your PATH
+typefully --version
 ```
 
-Requires Node.js 18+.
+Or run it without linking: `node dist/index.js --help`. Requires Node.js 18+. Not on npm yet.
 
 ## Authenticate
 
