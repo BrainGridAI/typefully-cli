@@ -81,6 +81,8 @@ printf 'first\n---\nsecond' | typefully drafts create
 
 # platforms, media, scheduling, metadata
 typefully drafts create "Hi" -p x,linkedin --media-file card.png --title "Wed post" --tags ship
+# a thread with one image per post: files in post order, one each
+typefully drafts create -f thread.md --media-file 1.png --media-file 2.png --media-file 3.png --media-per-post
 typefully drafts create "Hi" --schedule next-free-slot
 typefully drafts create "Hi" --schedule 2026-09-24T15:00:00Z
 typefully drafts create "Hi" --schedule now                       # publish immediately
@@ -153,6 +155,7 @@ recording the resulting draft ids so analytics can be matched back to campaigns.
       "publish_at": "2026-09-20T15:57:00Z",
       "tweets": ["main tweet", "reply with the link"],
       "media_files": ["content/clips/demo.mp4"],
+      "media_per_post": false,
       "platforms": ["x"]
     }
   ]

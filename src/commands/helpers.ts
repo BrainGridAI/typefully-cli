@@ -103,6 +103,8 @@ export interface BuildPlatformsOptions {
   hideLinkPreview?: boolean;
   /** Throw when an X post exceeds 280 weighted chars. Default true. */
   checkLength?: boolean;
+  /** Attach mediaIds one per post, in order (post 1 gets the first id, …) instead of all on the first post. */
+  mediaPerPost?: boolean;
 }
 
 export function buildPlatforms(options: BuildPlatformsOptions): PlatformsInput {
@@ -129,9 +131,18 @@ export function buildPlatforms(options: BuildPlatformsOptions): PlatformsInput {
     }
   }
 
+  if (options.mediaPerPost && (options.mediaIds?.length ?? 0) > posts.length) {
+    throw new TypefullyConfigError(
+      `--media-per-post: ${options.mediaIds?.length} media for ${posts.length} post(s); pass at most one per post, in post order.`,
+    );
+  }
+
   const basePosts: PostInput[] = posts.map((text, index) => {
     const post: PostInput = { text };
-    if (index === 0 && options.mediaIds?.length) post.media_ids = options.mediaIds;
+    if (options.mediaPerPost) {
+      const id = options.mediaIds?.[index];
+      if (id) post.media_ids = [id];
+    } else if (index === 0 && options.mediaIds?.length) post.media_ids = options.mediaIds;
     if (options.hideLinkPreview) post.hide_link_preview = true;
     return post;
   });

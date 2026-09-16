@@ -50,6 +50,13 @@ describe("buildPlatforms", () => {
     expect(body.x).toEqual({ enabled: true, posts: [{ text: "a", media_ids: ["m1"] }, { text: "b" }] });
     expect(body.linkedin).toEqual({ enabled: true, posts: [{ text: "a", media_ids: ["m1"] }, { text: "b" }] });
   });
+  it("attaches media one per post in order with mediaPerPost", () => {
+    const body = buildPlatforms({ platforms: ["x"], posts: ["a", "b", "c"], mediaIds: ["m1", "m2"], mediaPerPost: true });
+    expect(body.x).toEqual({ enabled: true, posts: [{ text: "a", media_ids: ["m1"] }, { text: "b", media_ids: ["m2"] }, { text: "c" }] });
+  });
+  it("refuses more media than posts with mediaPerPost", () => {
+    expect(() => buildPlatforms({ platforms: ["x"], posts: ["a"], mediaIds: ["m1", "m2"], mediaPerPost: true })).toThrow(/at most one per post/);
+  });
   it("puts reply/community in X settings and quote on the first X post only", () => {
     const body = buildPlatforms({ platforms: ["x", "bluesky"], posts: ["a"], replyTo: "https://x.com/u/status/1", quote: "https://x.com/u/status/2", community: "c1" });
     expect(body.x).toEqual({
